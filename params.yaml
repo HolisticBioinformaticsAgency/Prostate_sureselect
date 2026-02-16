@@ -1,65 +1,45 @@
-# Inputs (samplesheet-driven)
-samplesheet: "./refs/samplesheet_test.csv"
+# ============================================================
+# Pipeline Parameters (params.yaml)
+# ============================================================
 
-# Core references (must ALREADY exist in ./refs/)
-reference: "./refs/Homo_sapiens_assembly38.fasta"         # FASTA
-reference_fai: "./refs/Homo_sapiens_assembly38.fasta.fai" # FASTA index (.fai) — must match the FASTA
+# -------------------- Inputs --------------------
+samplesheet: "./samplesheet.csv"
 
-# NOTE: BWA index files are expected in the same folder with the SAME basename:
-#   ./refs/Homo_sapiens_assembly38.fasta.amb
-#   ./refs/Homo_sapiens_assembly38.fasta.ann
-#   ./refs/Homo_sapiens_assembly38.fasta.bwt
-#   ./refs/Homo_sapiens_assembly38.fasta.pac
-#   ./refs/Homo_sapiens_assembly38.fasta.sa
+# -------------------- Reference Base (informational) --------------------
+ref_base: "/fs04/vh83/pipeline_reference"
 
-bed: "./refs/S33266436_Padded_namefixed_filtered.bed"
+# -------------------- Core References --------------------
+reference: "/fs04/vh83/pipeline_reference/genomes/hg37/human_g1k_v37_decoy.fasta"
+reference_fai: "/fs04/vh83/pipeline_reference/genomes/hg37/human_g1k_v37_decoy.fasta"
+bed: "/fs04/vh83/pipeline_reference/panels/Agilent_custom/Prostate_ctDNA_v3/3388551_Covered_b37.slop.bed "
 
-# Outputs
-outdir: "result_test"
+# -------------------- Outputs --------------------
+outdir: "result"
 
-# VarDict Calling  
+# -------------------- VarDict --------------------
 min_af: 0.05
 
-# CNVkit genemetrics
-cnvkit_genemetrics_threshold: 0.4
-cnvkit_genemetrics_min_probes: 1  # Something to do with targeted WES?
 
-# VEP (container bind to /vep_cache in your profile)
+# -------------------- VEP --------------------
+# These params kinda have to fit what's inside the vep_cache_dir I think, as VEP the tool looks for: <dir_cache>/<species>/<version>_<assembly>
+
 vep_species: "homo_sapiens"
-vep_assembly: "GRCh38"
-vep_cache_dir: "/vep_cache"
 vep_version: "115"
+vep_assembly: "GRCh37"
+vep_cache_dir: "/fs04/vh83/pipeline_reference/annotations/vep_cache/115/RefSeq/homo_sapiens_refseq"
 
-# SnpEff (container bind to /snpeff_data in your profile)
-# Absolute host path where you put MANE + ClinVar
-refs_dir: "/fs04/scratch2/vh83/liem/projects/molbi_pipeline/refs/"
-mane_dir: "/fs04/scratch2/vh83/liem/projects/molbi_pipeline/refs/GRCh38.mane.1.2.refseq"
-clinvar_vcf: "/fs04/scratch2/vh83/liem/projects/molbi_pipeline/refs/clinvar_20250928.vcf.gz"
 
-# optional
+# -------------------- SnpEff / Annotation --------------------
+# where your refs live on the host
+refs_dir: "/fs04/vh83/pipeline_reference/"
+mane_dir: "/fs04/vh83/pipeline_reference/annotations/snpeff_cache/h38/MANE/1.2/"
+clinvar_vcf: "/fs04/vh83/pipeline_reference/annotations/clinvar/20260208/GRCh37/clinvar.vcf.gz"
+
+# Which ClinVar INFO fields to keep
 clinvar_info: "CLNSIG,CLNREVSTAT,CLNDN,CLNVC,ALLELEID,CLNVCSO,RS"
 
 snpeff_genome: "GRCh38.99"
 snpeff_data: "/snpeff_data"
 
-# pyTMB params 
-pytmb_eff_size: 33280000
-pytmb_annot: "snpeff"
-pytmb_db_config: "./refs/snpeff.yml"
-pytmb_var_config: "./refs/vardict.yml"
-pytmb_vaf: 0.05
-pytmb_min_depth: 20
-pytmb_min_alt: 2
-pytmb_filter_syn: true
-pytmb_filter_nc: true
-pytmb_filter_lq: true
-
-# Polysolver params (to silence warnings)
-polysolver_race: "Caucasian"
-polysolver_build: "hg38"
-polysolver_emit_vcf: 0
-polysolver_fastqtype: "STDFQ"
-polysolver_insertcalc: 0
-
-# MultiQC
+# -------------------- MultiQC --------------------
 multiqc_extra_args: ""

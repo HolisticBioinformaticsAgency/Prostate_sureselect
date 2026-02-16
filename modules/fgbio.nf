@@ -1,3 +1,4 @@
+
 process SET_MATE_INFO {
     tag "${subject}_${sample_id}"
     container ''
@@ -41,10 +42,10 @@ process GROUP_READS {
 
 process GENERATE_CONSENSUS {
     
-    ltag "${subject}_${sample_id}"
+    tag "${subject}_${sample_id}"
     container ''
     input:
-        tuple val(subject), val(sample_id), file(hist), file(bam) from ch_umiGroupedBams
+        tuple val(subject), val(sample_id), file(hist), file(bam)
     output:
         tuple val(subject), val(sample_id), file("${sample_id}.consensus.unmapped.bam") 
     //publishDir path: './output/UMI/intermediate', mode: 'copy'

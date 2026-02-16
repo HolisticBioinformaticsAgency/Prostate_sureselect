@@ -147,14 +147,6 @@ workflow {
     out
   }
   
-  // ---------- POLYSOLVER ----------
-  POLYSOLVER(
-    ch_cases_pub.flatMap { sub, case_id, mode, samples, pub_base ->
-      samples.collect { s ->
-        tuple(pub_base, sub, case_id, s[0], s[1], s[2])
-      }
-    }
-  )
 
   // ---------- VarDict ----------
   def ch_vardict_single_in = ch_cases_pub
@@ -195,19 +187,19 @@ workflow {
   def ch_vep_vcf, ch_vep_stats
   (ch_vep_vcf, ch_vep_stats) = VEP_ANNOTATE( ch_vep_in )
 
-  def ch_mane_dir    = Channel.of( file(params.mane_dir) )
-  def ch_snpeff_core = SNPEFF_ANNOTATE(
-    ch_variants_vcf.combine(ch_mane_dir).map { pub_base, sub, id, mode, vcf, mane ->
-      tuple(pub_base, sub, id, mode, vcf, mane)
-    }
-  )
+  //def ch_mane_dir    = Channel.of( file(params.mane_dir) )
+  //def ch_snpeff_core = SNPEFF_ANNOTATE(
+  //  ch_variants_vcf.combine(ch_mane_dir).map { pub_base, sub, id, mode, vcf, mane ->
+  //    tuple(pub_base, sub, id, mode, vcf, mane)
+  //  }
+  //)
   def ch_clinvar_vcf = Channel.of( file(params.clinvar_vcf) )
   def ch_clinvar_out = CLINVAR_ANNOTATE(
     ch_snpeff_core.combine(ch_clinvar_vcf).map { pub_base, sub, id, mode, core_vcf, clin ->
       tuple(pub_base, sub, id, mode, core_vcf, clin)
     }
   )
-
+/*
   def ch_annot_for_all = (params.pytmb_annot == 'snpeff')
     ? ch_clinvar_out.map { pub_base, sub, id, mode, vcf -> tuple(pub_base, sub, id, mode, vcf) }
     : ch_vep_vcf.combine( ch_variants_vcf.map{ pb, s, i, m, v -> tuple(s,i,m) } )
@@ -217,7 +209,7 @@ workflow {
                    assert s1==s2 && i1==i2
                    tuple(pb, s1, i1, mode, vepvcf)
                  }
-
+*/
   // Stop normal-only after annotation
   def ch_cases_has_tumor = ch_cases_pub.map { sub, case_id, mode, samples, pub_base ->
     tuple("${sub}::${case_id}", sub, case_id, samples.any{ it[3]=='tumor' })
@@ -247,19 +239,7 @@ workflow {
     tuple("${sub}::${id}", pub, sub, id, vcf)
   }
 
-  def ch_tmb_joined = ch_somatic_key.join( ch_cases_keyed )
-    .map { key, pub, sub, id, vcf, sub2, case_id, mode, samples, pub_base ->
-      def tumorRec   = samples.find { it[3] == 'tumor' }
-      def tumorLabel = tumorRec ? tumorRec[0] : null
-      tuple(pub_base ?: pub, sub, case_id, tumorLabel, vcf)
-    }
-
-  def ch_tmb_jobs = ch_tmb_joined.filter { pub, sub, case_id, tumorLabel, vcf -> tumorLabel != null }
-
-  PYTMB(
-    ch_tmb_jobs,
-    file(params.pytmb_db_config),
-    file(params.pytmb_var_config)
+  
   )
 
   // ---------- MultiQC ----------
