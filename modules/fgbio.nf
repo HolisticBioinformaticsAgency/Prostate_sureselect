@@ -2,18 +2,18 @@ process SET_MATE_INFO {
     tag "${subject}_${sample_id}"
     container ''
     input:
-      tuple val(subject), val(sample_id),  path(bam), path(bai)
+        tuple val(subject), val(sample_id),  path(bam), path(bai)
         
     output:
-      tuple val(subject), val(sample_id),
-      path("${sample_id}.aligned.matefixed.bam")
+        tuple val(subject), val(sample_id),
+        path("${sample_id}.aligned.matefixed.bam")
     
     script:
     """
     java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar SortBam \
-           -i $bam -o ${sample_id}.aligned.sorted.bam -s Queryname
+            -i $bam -o ${sample_id}.aligned.sorted.bam -s Queryname
     java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar SetMateInformation \
-          -i ${sample_id}.aligned.sorted.bam -r $ref -o ${sample_id}.aligned.matefixed.bam
+            -i ${sample_id}.aligned.sorted.bam -r $ref -o ${sample_id}.aligned.matefixed.bam
     """
 }
 
@@ -25,16 +25,16 @@ process GROUP_READS {
 
     publishDir path: 'fix_this', mode: 'copy', pattern: "*.tsv"
     input:
-      tuple val(subject), val(sample_id), path(bam)
+        tuple val(subject), val(sample_id), path(bam)
     output:
-      tuple val(subject, val(sample_id), path("${sample_id}.piped.grouped.histogram.tsv"), path("${sample_id}.piped.grouped.bam") 
+        tuple val(subject), val(sample_id), path("${sample_id}.piped.grouped.histogram.tsv"), path("${sample_id}.piped.grouped.bam") 
     
     
 
     script:
     """
     java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar GroupReadsByUmi \
-         -i ${bam} -f "${sample_id}.piped.grouped.histogram.tsv" -o "${sample_id}.piped.grouped.bam" -s Adjacency -e 1 
+        -i ${bam} -f "${sample_id}.piped.grouped.histogram.tsv" -o "${sample_id}.piped.grouped.bam" -s Adjacency -e 1 
     """
 
 }
