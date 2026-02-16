@@ -33,7 +33,7 @@ process ALIGN_AND_SORT {
   # Your RG and pipeline (no SAM written to disk)
   RG="@RG\\tID:${sample_id}\\tSM:${sample_id}\\tPU:lib1\\tPL:Illumina"
 
-  bwa mem -M -t ${task.cpus} -R "\$RG" ${ref_fa} ${reads.join(' ')} \\
+  bwa mem -C -t ${task.cpus} -R "\$RG" ${ref_fa} ${reads.join(' ')} \\
     | samtools view -u -h - \\
     | samtools sort -@ ${task.cpus} -o "${sample_id}.hq.sorted.bam"
 
