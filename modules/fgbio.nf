@@ -4,7 +4,7 @@ process SET_MATE_INFO {
     container ''
     input:
         tuple val(subject), val(sample_id),  path(bam), path(bai)
-        
+        path (reference)
     output:
         tuple val(subject), val(sample_id),
         path("${sample_id}.aligned.matefixed.bam")
