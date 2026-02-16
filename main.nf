@@ -94,7 +94,7 @@ workflow {
 
   // ---------- FGBIO ----------
   
-  ch_fgbio_out1 = SET_MATE_INFO(ch_bam_sorted)
+  ch_fgbio_out1 = SET_MATE_INFO(ch_bam_sorted, params.reference)
   ch_fgbio_out2 = GROUP_READS (ch_fgbio_out1)
   ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_out2)
   ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
