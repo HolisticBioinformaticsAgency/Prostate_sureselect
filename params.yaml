@@ -32,14 +32,14 @@ vep_cache_dir: "/fs04/vh83/pipeline_reference/annotations/vep_cache/115/RefSeq/h
 # -------------------- SnpEff / Annotation --------------------
 # where your refs live on the host
 refs_dir: "/fs04/vh83/pipeline_reference/"
-mane_dir: "/fs04/vh83/pipeline_reference/annotations/snpeff_cache/h38/MANE/1.2/"
+#mane_dir: "/fs04/vh83/pipeline_reference/annotations/snpeff_cache/h38/MANE/1.2/"
 clinvar_vcf: "/fs04/vh83/pipeline_reference/annotations/clinvar/20260208/GRCh37/clinvar.vcf.gz"
 
 # Which ClinVar INFO fields to keep
 clinvar_info: "CLNSIG,CLNREVSTAT,CLNDN,CLNVC,ALLELEID,CLNVCSO,RS"
 
-snpeff_genome: "GRCh38.99"
-snpeff_data: "/snpeff_data"
+#snpeff_genome: "GRCh38.99"
+#snpeff_data: "/snpeff_data"
 
 # -------------------- MultiQC --------------------
 multiqc_extra_args: ""
