@@ -1,0 +1,65 @@
+# Inputs (samplesheet-driven)
+samplesheet: "./refs/samplesheet_test.csv"
+
+# Core references (must ALREADY exist in ./refs/)
+reference: "./refs/Homo_sapiens_assembly38.fasta"         # FASTA
+reference_fai: "./refs/Homo_sapiens_assembly38.fasta.fai" # FASTA index (.fai) — must match the FASTA
+
+# NOTE: BWA index files are expected in the same folder with the SAME basename:
+#   ./refs/Homo_sapiens_assembly38.fasta.amb
+#   ./refs/Homo_sapiens_assembly38.fasta.ann
+#   ./refs/Homo_sapiens_assembly38.fasta.bwt
+#   ./refs/Homo_sapiens_assembly38.fasta.pac
+#   ./refs/Homo_sapiens_assembly38.fasta.sa
+
+bed: "./refs/S33266436_Padded_namefixed_filtered.bed"
+
+# Outputs
+outdir: "result_test"
+
+# VarDict Calling  
+min_af: 0.05
+
+# CNVkit genemetrics
+cnvkit_genemetrics_threshold: 0.4
+cnvkit_genemetrics_min_probes: 1  # Something to do with targeted WES?
+
+# VEP (container bind to /vep_cache in your profile)
+vep_species: "homo_sapiens"
+vep_assembly: "GRCh38"
+vep_cache_dir: "/vep_cache"
+vep_version: "115"
+
+# SnpEff (container bind to /snpeff_data in your profile)
+# Absolute host path where you put MANE + ClinVar
+refs_dir: "/fs04/scratch2/vh83/liem/projects/molbi_pipeline/refs/"
+mane_dir: "/fs04/scratch2/vh83/liem/projects/molbi_pipeline/refs/GRCh38.mane.1.2.refseq"
+clinvar_vcf: "/fs04/scratch2/vh83/liem/projects/molbi_pipeline/refs/clinvar_20250928.vcf.gz"
+
+# optional
+clinvar_info: "CLNSIG,CLNREVSTAT,CLNDN,CLNVC,ALLELEID,CLNVCSO,RS"
+
+snpeff_genome: "GRCh38.99"
+snpeff_data: "/snpeff_data"
+
+# pyTMB params 
+pytmb_eff_size: 33280000
+pytmb_annot: "snpeff"
+pytmb_db_config: "./refs/snpeff.yml"
+pytmb_var_config: "./refs/vardict.yml"
+pytmb_vaf: 0.05
+pytmb_min_depth: 20
+pytmb_min_alt: 2
+pytmb_filter_syn: true
+pytmb_filter_nc: true
+pytmb_filter_lq: true
+
+# Polysolver params (to silence warnings)
+polysolver_race: "Caucasian"
+polysolver_build: "hg38"
+polysolver_emit_vcf: 0
+polysolver_fastqtype: "STDFQ"
+polysolver_insertcalc: 0
+
+# MultiQC
+multiqc_extra_args: ""
