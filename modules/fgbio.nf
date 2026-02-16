@@ -14,7 +14,7 @@ process SET_MATE_INFO {
     java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" SortBam \
             -i $bam -o ${sample_id}.aligned.sorted.bam -s Queryname
     java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" SetMateInformation \
-            -i ${sample_id}.aligned.sorted.bam -r $ref -o ${sample_id}.aligned.matefixed.bam
+            -i ${sample_id}.aligned.sorted.bam -r $reference -o ${sample_id}.aligned.matefixed.bam
     """
 }
 
@@ -97,7 +97,7 @@ process MAP_CONSENSUS {
         -I "$bam" \
         -FASTQ /dev/stdout \
         -INTERLEAVE true -TMP_DIR "/fs04/scratch2/vh83/jason/tmp" | \
-    bwa mem -M -t ${task.cpus} -p $ref /dev/stdin > ${sample_id}.temp.bam
+    bwa mem -M -t ${task.cpus} -p $reference /dev/stdin > ${sample_id}.temp.bam
     samtools sort -o ${sample_id}.consensus.aligned.bam ${sample_id}.temp.bam
     """
 }
