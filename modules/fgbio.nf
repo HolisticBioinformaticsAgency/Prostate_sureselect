@@ -11,9 +11,9 @@ process SET_MATE_INFO {
     
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar SortBam \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar $fgbioJar SortBam \
             -i $bam -o ${sample_id}.aligned.sorted.bam -s Queryname
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar SetMateInformation \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar $fgbioJar SetMateInformation \
             -i ${sample_id}.aligned.sorted.bam -r $ref -o ${sample_id}.aligned.matefixed.bam
     """
 }
@@ -34,7 +34,7 @@ process GROUP_READS {
 
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar GroupReadsByUmi \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar $fgbioJar GroupReadsByUmi \
         -i ${bam} -f "${sample_id}.piped.grouped.histogram.tsv" -o "${sample_id}.piped.grouped.bam" -s Adjacency -e 1 
     """
 
@@ -52,7 +52,7 @@ process GENERATE_CONSENSUS {
 
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar CallMolecularConsensusReads \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar $fgbioJar CallMolecularConsensusReads \
         --input $bam --output ${sample_id}.consensus.unmapped.bam \
         --error-rate-post-umi 30 --min-reads 3
     """
@@ -71,7 +71,7 @@ process FGBIO_STATS {
     
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir=$tmp_dir -jar $fgbioJar CollectDuplexSeqMetrics \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar $fgbioJar CollectDuplexSeqMetrics \
         -i $bam -o ${sample_id} 
         
     """
@@ -96,7 +96,7 @@ process MAP_CONSENSUS {
     java -Dpicard.useLegacyParser=false -Xmx${ (task.memory.toGiga() / 6).toInteger() }g -jar $picardJar SamToFastq \
         -I "$bam" \
         -FASTQ /dev/stdout \
-        -INTERLEAVE true -TMP_DIR $tmp_dir | \
+        -INTERLEAVE true -TMP_DIR "/fs04/scratch2/vh83/jason/tmp" | \
     bwa mem -M -t ${task.cpus} -p $ref /dev/stdin > ${sample_id}.temp.bam
     samtools sort -o ${sample_id}.consensus.aligned.bam ${sample_id}.temp.bam
     """
