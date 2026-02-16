@@ -184,8 +184,7 @@ workflow {
     .map { pub_base, sub, id, mode, vcf, ref_fa ->
       tuple(pub_base, sub, id, file(vcf), file(ref_fa))
     }
-  def ch_vep_vcf, ch_vep_stats
-  (ch_vep_vcf, ch_vep_stats) = VEP_ANNOTATE( ch_vep_in )
+  def (ch_vep_vcf, ch_vep_stats) = VEP_ANNOTATE( ch_vep_in )
 
   //def ch_mane_dir    = Channel.of( file(params.mane_dir) )
   //def ch_snpeff_core = SNPEFF_ANNOTATE(
@@ -240,7 +239,7 @@ workflow {
   }
 
   
-  )
+  
 
   // ---------- MultiQC ----------
   def ch_hsmetrics_files = HSMETRICS.out.hs.map { sub, sid, hs -> hs }
