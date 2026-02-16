@@ -11,7 +11,7 @@ ref_base: "/fs04/vh83/pipeline_reference"
 # -------------------- Core References --------------------
 reference: "/fs04/vh83/pipeline_reference/genomes/hg37/human_g1k_v37_decoy.fasta"
 reference_fai: "/fs04/vh83/pipeline_reference/genomes/hg37/human_g1k_v37_decoy.fasta"
-bed: "/fs04/vh83/pipeline_reference/panels/Agilent_custom/Prostate_ctDNA_v3/3388551_Covered_b37.slop.bed "
+bed: "/fs04/vh83/pipeline_reference/panels/Agilent_custom/Prostate_ctDNA_v3/3388551_Covered_b37.slop.bed"
 
 # -------------------- Outputs --------------------
 outdir: "result"
