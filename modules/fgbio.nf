@@ -93,7 +93,7 @@ process MAP_CONSENSUS {
 
     script:
     """
-    java -Dpicard.useLegacyParser=false -Xmx${ (task.memory.toGiga() / 6).toInteger() }g -jar $picardJar SamToFastq \
+    java -Dpicard.useLegacyParser=false -Xmx${ (task.memory.toGiga() / 6).toInteger() }g -jar "/fs04/vh83/local_software/picard.jar" SamToFastq \
         -I "$bam" \
         -FASTQ /dev/stdout \
         -INTERLEAVE true -TMP_DIR "/fs04/scratch2/vh83/jason/tmp" | \
