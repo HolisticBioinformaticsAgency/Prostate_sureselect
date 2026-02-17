@@ -86,6 +86,8 @@ process MAP_CONSENSUS {
     input:
         tuple val(subject), val(sample_id), file(bam)
         path (reference)
+        val (ref_src_abs)
+    
     output:
         tuple val(subject), val(sample_id), file("${sample_id}.consensus.aligned.bam") 
 
@@ -94,6 +96,22 @@ process MAP_CONSENSUS {
     """
     module load bwa
     module load samtools
+
+    set -euo pipefail
+
+    # Ensure BWA can find its sidecar index files next to the staged FASTA
+    for ext in amb ann bwt pac sa; do
+    if [ -s "${ref_src_abs}.\$ext" ]; then
+        ln -sf "${ref_src_abs}.\$ext" .
+    else
+        echo "Missing BWA index: ${ref_src_abs}.\$ext" >&2
+        exit 2
+    fi
+    done
+
+
+
+
     java -Dpicard.useLegacyParser=false -Xmx${ (task.memory.toGiga() / 6).toInteger() }g -jar "/fs04/vh83/local_software/picard.jar" SamToFastq \
         -I "$bam" \
         -FASTQ /dev/stdout \
