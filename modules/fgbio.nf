@@ -80,9 +80,7 @@ process FGBIO_STATS {
 process MAP_CONSENSUS {
     
     tag "${subject}_${sample_id}"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    'https://community-cr-prod.seqera.io/docker/registry/v2/blobs/sha256/d7/d7e24dc1e4d93ca4d3a76a78d4c834a7be3985b0e1e56fddd61662e047863a8a/data' :
-    'community.wave.seqera.io/library/bwa_htslib_samtools:83b50ff84ead50d0' }"
+    container ''
 
     publishDir path: './output/bams', mode: 'copy'
     input:
@@ -94,6 +92,8 @@ process MAP_CONSENSUS {
 
     script:
     """
+    module load bwa
+    module load samtools
     java -Dpicard.useLegacyParser=false -Xmx${ (task.memory.toGiga() / 6).toInteger() }g -jar "/fs04/vh83/local_software/picard.jar" SamToFastq \
         -I "$bam" \
         -FASTQ /dev/stdout \
