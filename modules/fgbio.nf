@@ -85,7 +85,7 @@ process MAP_CONSENSUS {
     publishDir path: './output/bams', mode: 'copy'
     input:
         tuple val(subject), val(sample_id), file(bam)
-        tuple path (reference)
+        path (reference)
     output:
         tuple val(subject), val(sample_id), file("${sample_id}.consensus.aligned.bam") 
 
