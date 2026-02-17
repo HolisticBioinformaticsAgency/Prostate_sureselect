@@ -98,7 +98,7 @@ workflow {
   ch_fgbio_out2 = GROUP_READS (ch_fgbio_out1)
   ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_out2)
   ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
-  ch_fgbio_out5 = MAP_CONSENSUS ( ch_fgbio_out3 )
+  ch_fgbio_out5 = MAP_CONSENSUS ( ch_fgbio_out3, params.reference )
   ch_bam = INDEX ( ch_fgbio_out5 )
 
 
