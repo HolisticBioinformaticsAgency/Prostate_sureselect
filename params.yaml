@@ -26,7 +26,7 @@ min_af: 0.05
 vep_species: "homo_sapiens"
 vep_version: "115"
 vep_assembly: "GRCh37"
-vep_cache_dir: "/fs04/vh83/pipeline_reference/annotations/vep_cache/115/RefSeq/homo_sapiens_refseq"
+vep_cache_dir: "/fs04/vh83/pipeline_reference/annotations/vep_cache/115/RefSeq/"
 
 
 # -------------------- SnpEff / Annotation --------------------
