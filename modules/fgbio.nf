@@ -24,7 +24,7 @@ process GROUP_READS {
     tag "${subject}_${sample_id}"
     container ''
 
-    publishDir path: 'fix_this', mode: 'copy', pattern: "*.tsv"
+    publishDir path: './output/metrics/fgbio', mode: 'copy', pattern: "*.tsv"
     input:
         tuple val(subject), val(sample_id), path(bam)
     output:
@@ -48,7 +48,7 @@ process GENERATE_CONSENSUS {
         tuple val(subject), val(sample_id), file(hist), file(bam)
     output:
         tuple val(subject), val(sample_id), file("${sample_id}.consensus.unmapped.bam") 
-    //publishDir path: './output/UMI/intermediate', mode: 'copy'
+    q//publishDir path: './output/UMI/intermediate', mode: 'copy'
 
     script:
     """
@@ -108,8 +108,6 @@ process MAP_CONSENSUS {
         exit 2
     fi
     done
-
-
 
 
     java -Dpicard.useLegacyParser=false -Xmx${ (task.memory.toGiga() / 6).toInteger() }g -jar "/fs04/vh83/local_software/picard.jar" SamToFastq \

@@ -103,26 +103,26 @@ workflow {
 
 
   // ---------- Attach metadata ----------
-  ch_bam_meta = ch_bam
+  ch_bam_meta = ch_bam.collect()
     .map  { sub, sample, bam, bai -> tuple(sample, tuple(sub, bam, bai)) }
     .join ( ch_meta )
     .map  { sample, left, subject, status, sex ->
       tuple(subject, sample, status, sex, left[1], left[2])
     }
 
-/* 
+ 
   // ---------- HsMetrics ----------
   def ch_hs_in = ch_bam.combine(ch_bed).combine(ch_ref_fa).combine(ch_ref_fai)
     .map { sub, sample, bam, bai, bed, ref_fa, ref_fai -> tuple(sub, sample, bam, bai, bed, ref_fa, ref_fai) }
   HSMETRICS( ch_hs_in )
-*/
+
  // ---------- Build per-subject groups (deterministic) ----------
   def by_subject = ch_bam_meta
     .map { sub, sample, status, sex, bam, bai -> tuple(sub, tuple(sample, status, bam, bai)) }
     .groupTuple()
     .map { sub, recs -> tuple(sub, recs.sort { a, b -> a[0] <=> b[0] }) } // stable order
     .view()
-    
+
   // ---------- Compute cases and publishing base in one pass ----------
   def ch_cases_pub = by_subject.flatMap { sub, recs ->
     // rec: [sample, status, bam, bai]

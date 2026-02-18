@@ -14,7 +14,7 @@ reference_fai: "/fs04/vh83/pipeline_reference/genomes/hg37/human_g1k_v37_decoy.f
 bed: "/fs04/vh83/pipeline_reference/panels/Agilent_custom/Prostate_ctDNA_v3/3388551_Covered_b37.slop.bed"
 
 # -------------------- Outputs --------------------
-outdir: "result"
+outdir: "${launchDir}/output"
 
 # -------------------- VarDict --------------------
 min_af: 0.05

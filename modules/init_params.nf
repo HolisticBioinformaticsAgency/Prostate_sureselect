@@ -1,5 +1,5 @@
 workflow INIT_PARAMS {
-  if( !params.containsKey('samplesheet')   ) params.samplesheet    = "./refs/samplesheet.csv"
+  if( !params.containsKey('samplesheet')   ) params.samplesheet    = "./samplesheet.csv"
   if( !params.containsKey('reference')     ) params.reference      = null
   if( !params.containsKey('reference_fai') ) params.reference_fai  = null
   if( !params.containsKey('bed')           ) params.bed            = null
