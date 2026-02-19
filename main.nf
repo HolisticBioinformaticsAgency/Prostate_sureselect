@@ -26,7 +26,11 @@ include { CLINVAR_ANNOTATE }               from './modules/clinvar_annotate.nf'
 include { SOMATIC_FILTER }                 from './modules/somatic_filter.nf'
 include { MULTIQC }                        from './modules/multiqc.nf'
 
-// -------------------- Samplesheet → Channels --------------------
+
+
+// -------------------- Workflow --------------------
+workflow {
+    // -------------------- Samplesheet → Channels --------------------
 def REQUIRED = ['sample','subject','status','fastq_1','fastq_2']
 
 Channel
@@ -73,10 +77,6 @@ Channel
   .of( params.reference )
   .map { new File(it as String).getAbsolutePath() }
   .set { ch_ref_src_abs }
-
-// -------------------- Workflow --------------------
-workflow {
-
   // ---- Param check ---------
   INIT_PARAMS()
 
@@ -103,14 +103,15 @@ workflow {
 
 
   // ---------- Attach metadata ----------
-  ch_bam_meta = ch_bam.collect()
+  ch_bam_meta = ch_bam
     .map  { sub, sample, bam, bai -> tuple(sample, tuple(sub, bam, bai)) }
     .join ( ch_meta )
     .map  { sample, left, subject, status, sex ->
       tuple(subject, sample, status, sex, left[1], left[2])
+      .collect()
     }
 
- 
+
   // ---------- HsMetrics ----------
   def ch_hs_in = ch_bam.combine(ch_bed).combine(ch_ref_fa).combine(ch_ref_fai)
     .map { sub, sample, bam, bai, bed, ref_fa, ref_fai -> tuple(sub, sample, bam, bai, bed, ref_fa, ref_fai) }
@@ -253,7 +254,6 @@ workflow {
   def ch_multiqc_inputs  = ch_dedup_metrics.mix(ch_hsmetrics_files).collect()
   MULTIQC( ch_multiqc_inputs )
  */ 
-}
 
 workflow.onComplete {
     def outdir = params.outdir_abs
@@ -285,3 +285,7 @@ workflow.onComplete {
     def rc = p.waitFor()
     if( rc != 0 ) log.warn "VCF gather post-step exited with code ${rc}"
 }
+
+
+}
+
