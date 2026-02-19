@@ -103,7 +103,7 @@ Channel
 
 
   // ---------- Attach metadata ----------
-  ch_bam_meta = ch_bam
+  ch_bam_meta = ch_bam.collect()
     .map  { sub, sample, bam, bai -> tuple(sample, tuple(sub, bam, bai)) }
     .join ( ch_meta )
     .map  { sample, left, subject, status, sex ->
