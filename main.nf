@@ -100,8 +100,11 @@ Channel
   ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
   ch_fgbio_out5 = MAP_CONSENSUS ( ch_fgbio_out3, params.reference, ch_ref_src_abs )
   ch_bam = INDEX ( ch_fgbio_out5 )
-  ch_bam.collect().view()
-
+  
+  ch_fgbio_out3.view()
+  
+  
+ 
   // ---------- Attach metadata ----------
   ch_bam_meta = ch_bam.collect()
     .map  { sub, sample, bam, bai -> tuple(sample, tuple(sub, bam, bai)) }
