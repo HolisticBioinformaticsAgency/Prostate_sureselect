@@ -48,7 +48,7 @@ process GENERATE_CONSENSUS {
         tuple val(subject), val(sample_id), file(hist), file(bam)
     output:
         tuple val(subject), val(sample_id), file("${sample_id}.consensus.unmapped.bam") 
-    q//publishDir path: './output/UMI/intermediate', mode: 'copy'
+    //publishDir path: './output/UMI/intermediate', mode: 'copy'
 
     script:
     """
