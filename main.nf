@@ -108,7 +108,7 @@ Channel
     .join ( ch_meta )
     .map  { sample, left, subject, status, sex ->
       tuple(subject, sample, status, sex, left[1], left[2])
-      .collect()
+      
     }
 
 
@@ -122,7 +122,7 @@ Channel
     .map { sub, sample, status, sex, bam, bai -> tuple(sub, tuple(sample, status, bam, bai)) }
     .groupTuple()
     .map { sub, recs -> tuple(sub, recs.sort { a, b -> a[0] <=> b[0] }) } // stable order
-    .view()
+    .collect()
 
   // ---------- Compute cases and publishing base in one pass ----------
   def ch_cases_pub = by_subject.flatMap { sub, recs ->
