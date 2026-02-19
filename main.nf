@@ -154,7 +154,7 @@ Channel
     out
   }
   
-  ch_cases_pub.view()
+  ch_cases_pub.collect()
 
   // ---------- VarDict ----------
   def ch_vardict_single_in = ch_cases_pub
