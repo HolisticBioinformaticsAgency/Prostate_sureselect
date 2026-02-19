@@ -253,7 +253,7 @@ Channel
   def ch_hsmetrics_files = HSMETRICS.out.hs.map { sub, sid, hs -> hs }
   def ch_multiqc_inputs  = ch_dedup_metrics.mix(ch_hsmetrics_files).collect()
   MULTIQC( ch_multiqc_inputs )
- */ 
+ 
 
 workflow.onComplete {
     def outdir = params.outdir_abs
@@ -285,7 +285,7 @@ workflow.onComplete {
     def rc = p.waitFor()
     if( rc != 0 ) log.warn "VCF gather post-step exited with code ${rc}"
 }
-
+*/
 
 }
 
