@@ -98,10 +98,10 @@ Channel
   ch_fgbio_out2 = GROUP_READS (ch_fgbio_out1)
   ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_out2)
   ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
-  ch_fgbio_out5 = MAP_CONSENSUS ( ch_fgbio_out3, params.reference, ch_ref_src_abs )
+  ch_fgbio_out5 = MAP_CONSENSUS ( ch_fgbio_out3.combine(ch_ref_fa).combine(ch_ref_src_abs))
   ch_bam = INDEX ( ch_fgbio_out5 )
   
-  ch_fgbio_out3.view()
+  ch_fgbio_out5.view()
   
   
  
