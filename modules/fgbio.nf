@@ -28,7 +28,7 @@ process GROUP_READS {
     input:
         tuple val(subject), val(sample_id), val(status), path(bam)
     output:
-        tuple val(subject), val(sample_id), val(status) path("${sample_id}.piped.grouped.histogram.tsv"), path("${sample_id}.piped.grouped.bam") 
+        tuple val(subject), val(sample_id), val(status), path("${sample_id}.piped.grouped.histogram.tsv"), path("${sample_id}.piped.grouped.bam") 
     
     
 
