@@ -53,7 +53,7 @@ process GENERATE_CONSENSUS {
     script:
     """
     module load java
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" CallDuplexConsensusReads \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" CallMolecularConsensusReads \
         --input $bam --output ${sample_id}.consensus.unmapped.bam \
         --error-rate-post-umi 30 --min-reads ${min_reads}
     """
