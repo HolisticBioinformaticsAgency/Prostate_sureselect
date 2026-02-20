@@ -71,8 +71,8 @@ ch_meta  = ch_sheet.map { sample, subject, status, r1, r2, sex ->
 Channel.of( file(params.reference)     ).set { ch_ref_fa }
 Channel.of( file(params.reference_fai) ).set { ch_ref_fai }
 Channel.of( file(params.bed)           ).set { ch_bed }
-Channel.of(val(params.tumor_min_reads) ).set {ch_tumor_min_reads}
-Channel.of(val(params.normal_min_reads) ).set {ch_normal_min_reads}
+Channel.of(params.tumor_min_reads).set {ch_tumor_min_reads}
+Channel.of(params.normal_min_reads).set {ch_normal_min_reads}
 
 // Also pass original absolute FASTA path (for BWA sidecars)
 Channel
@@ -142,7 +142,7 @@ Channel
     
 
   // ---------- Compute cases and publishing base in one pass ----------
-  def ch_cases_pub = by_subject.collect().flatMap { sub, recs ->
+  def ch_cases_pub = by_subject.flatMap { sub, recs ->
     // rec: [sample, status, bam, bai]
     def tumors  = recs.findAll { it[1] == 'tumor'  }.collect { [ it[0], it[2], it[3], 'tumor'  ] } // [id,bam,bai,status]
     def normals = recs.findAll { it[1] == 'normal' }.collect { [ it[0], it[2], it[3], 'normal' ] }
