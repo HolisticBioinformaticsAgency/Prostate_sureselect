@@ -5,11 +5,10 @@ process SURETRIMMER {
   publishDir { "${params.outdir_abs}/${subject}/trimmed" }, mode: 'copy'
 
   input:
-  // (subject, sample_id, [R1,R2], staged FASTA, ABSOLUTE original FASTA path string)
-    tuple val(subject), val(sample_id), path(R1), path(R2)
+    tuple val(subject), val(sample_id), val(status), path(R1), path(R2)
 
   output:
-  tuple val(subject), val(sample_id),
+  tuple val(subject), val(sample_id), val(status),
     path("${sample_id}.trimmed_R1.fastq.gz"),
     path("${sample_id}.trimmed_R2.fastq.gz")
         

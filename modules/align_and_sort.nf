@@ -8,10 +8,10 @@ process ALIGN_AND_SORT {
 
   input:
   // (subject, sample_id, [R1,R2], staged FASTA, ABSOLUTE original FASTA path string)
-  tuple val(subject), val(sample_id), path(reads), path(ref_fa), val(ref_src_abs)
+  tuple val(subject), val(sample_id), val(status), path(reads), path(ref_fa), val(ref_src_abs)
 
   output:
-  tuple val(subject), val(sample_id),
+  tuple val(subject), val(sample_id), val(status),
         path("${sample_id}.hq.sorted.bam"),
         path("${sample_id}.hq.sorted.bam.bai"),
         emit: bam

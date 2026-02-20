@@ -3,10 +3,10 @@ process SET_MATE_INFO {
     tag "${subject}_${sample_id}"
     container ''
     input:
-        tuple val(subject), val(sample_id),  path(bam), path(bai)
+        tuple val(subject), val(sample_id), val(status), path(bam), path(bai)
         path (reference)
     output:
-        tuple val(subject), val(sample_id),
+        tuple val(subject), val(sample_id), val(status),
         path("${sample_id}.aligned.matefixed.bam")
     
     script:
@@ -26,9 +26,9 @@ process GROUP_READS {
 
     publishDir path: './output/metrics/fgbio', mode: 'copy', pattern: "*.tsv"
     input:
-        tuple val(subject), val(sample_id), path(bam)
+        tuple val(subject), val(sample_id), val(status), path(bam)
     output:
-        tuple val(subject), val(sample_id), path("${sample_id}.piped.grouped.histogram.tsv"), path("${sample_id}.piped.grouped.bam") 
+        tuple val(subject), val(sample_id), val(status) path("${sample_id}.piped.grouped.histogram.tsv"), path("${sample_id}.piped.grouped.bam") 
     
     
 
@@ -45,7 +45,7 @@ process GENERATE_CONSENSUS {
     tag "${subject}_${sample_id}"
     container ''
     input:
-        tuple val(subject), val(sample_id), file(hist), file(bam)
+        tuple val(subject), val(sample_id),  val(status), file(hist), file(bam), val(min_reads)
     output:
         tuple val(subject), val(sample_id), file("${sample_id}.consensus.unmapped.bam") 
     //publishDir path: './output/UMI/intermediate', mode: 'copy'
@@ -54,7 +54,7 @@ process GENERATE_CONSENSUS {
     """
     java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" CallMolecularConsensusReads \
         --input $bam --output ${sample_id}.consensus.unmapped.bam \
-        --error-rate-post-umi 30 --min-reads 3
+        --error-rate-post-umi 30 --min-reads ${min_reads}
     """
 }
 

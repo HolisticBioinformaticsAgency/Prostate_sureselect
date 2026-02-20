@@ -60,7 +60,7 @@ ch_reads = ch_sheet.map { sample, subject, status, r1, r2, sex ->
 }
 
 ch_trim = ch_sheet.map { sample, subject, status, r1, r2, sex ->
-  tuple(subject, sample, r1, r2)}
+  tuple(subject, sample, status, r1, r2)}
 
 // Sample metadata for joins: (sample, subject, status, sex)
 ch_meta  = ch_sheet.map { sample, subject, status, r1, r2, sex ->
@@ -71,6 +71,8 @@ ch_meta  = ch_sheet.map { sample, subject, status, r1, r2, sex ->
 Channel.of( file(params.reference)     ).set { ch_ref_fa }
 Channel.of( file(params.reference_fai) ).set { ch_ref_fai }
 Channel.of( file(params.bed)           ).set { ch_bed }
+Channel.of(val(params.tumor_min_reads) ).set {ch_tumor_min_reads}
+Channel.of(val(params.normal_min_reads) ).set {ch_normal_min_reads}
 
 // Also pass original absolute FASTA path (for BWA sidecars)
 Channel
@@ -85,8 +87,8 @@ Channel
 
   // ---------- trim reads ------------
   ch_trim_out = SURETRIMMER ( ch_trim )
-  ch_align_in_alpha = ch_trim_out.map { sample, subject, r1, r2 -> 
-    tuple(sample, subject, [r1, r2])}
+  ch_align_in_alpha = ch_trim_out.map { sample, subject, status, r1, r2 -> 
+    tuple(sample, subject, status, [r1, r2])}
 
   // ---------- Align + Sort ----------
   ch_align_in   = ch_align_in_alpha.combine(ch_ref_fa).combine(ch_ref_src_abs)
@@ -96,17 +98,27 @@ Channel
   
   ch_fgbio_out1 = SET_MATE_INFO(ch_bam_sorted, params.reference)
   ch_fgbio_out2 = GROUP_READS (ch_fgbio_out1)
-  ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_out2)
-  ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
   
+  branched_data = ch_fgbio_out2.branch {
+    normal: it.status == 'normal'
+    tumor: it.status == 'tumor'
+    }
+  
+  ch_fgbio_normal = branched_data.normal.combine(ch_normal_min_reads)
+  ch_fgbio_tumor = branched_data.tumor.combine(ch_tumor_min_reads)
+  
+  ch_fgbio_normal.view()
+  ch_fgbio_tumor.view()
+
+  ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_out2)
+  
+  ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
   ch_for_consensus = (ch_fgbio_out3.combine(ch_ref_fa).combine(ch_ref_src_abs))
   ch_fgbio_out5 = MAP_CONSENSUS ( ch_for_consensus )
   ch_bam = INDEX ( ch_fgbio_out5 )
-  
-  ch_fgbio_out5.view()
-  
-  
- 
+
+
+
   // ---------- Attach metadata ----------
   ch_bam_meta = ch_bam
     .map  { sub, sample, bam, bai -> tuple(sample, tuple(sub, bam, bai)) }
@@ -223,36 +235,7 @@ Channel
                    tuple(pb, s1, i1, mode, vepvcf)
                  }
 
-  // Stop normal-only after annotation
-  def ch_cases_has_tumor = ch_cases_pub.map { sub, case_id, mode, samples, pub_base ->
-    tuple("${sub}::${case_id}", sub, case_id, samples.any{ it[3]=='tumor' })
-  }
-  def ch_annot_keyed    = ch_annot_for_all.map { pub, sub, id, mode, vcf -> tuple("${sub}::${id}", pub, sub, id, mode, vcf) }
-  def ch_anno_with_flag = ch_annot_keyed.join( ch_cases_has_tumor )
-    .map { key, pub, sub, id, mode, vcf, sub2, case_id, hasTumor ->
-      tuple(pub, sub, id, mode, vcf, hasTumor)
-    }
-
-  def ch_for_tumor = ch_anno_with_flag
-    .filter { pub, sub, id, mode, vcf, hasTumor -> hasTumor }
-    .map    { pub, sub, id, mode, vcf, hasTumor -> tuple(pub, sub, id, mode, vcf) }
-
-  def ch_somatic_filtered_vcf = SOMATIC_FILTER( ch_for_tumor )
-
-  def ch_vep_peptide_in = ch_somatic_filtered_vcf.combine(ch_ref_fa)
-    .map { pub, sub, id, vcf, ref -> tuple(pub, sub, id, vcf, ref)
-    }
-
-  VEP_ANNOTATE_PEPTIDE(ch_vep_peptide_in)
-
-  def ch_cases_keyed = ch_cases_pub.map { sub, case_id, mode, samples, pub_base ->
-    tuple("${sub}::${case_id}", sub, case_id, mode, samples, pub_base)
-  }
-  def ch_somatic_key = ch_somatic_filtered_vcf.map { pub, sub, id, vcf ->
-    tuple("${sub}::${id}", pub, sub, id, vcf)
-  }
-
-  
+ 
   
 
   // ---------- MultiQC ----------
