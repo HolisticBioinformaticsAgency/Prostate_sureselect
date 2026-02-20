@@ -99,18 +99,14 @@ Channel
   ch_fgbio_out1 = SET_MATE_INFO(ch_bam_sorted, params.reference)
   ch_fgbio_out2 = GROUP_READS (ch_fgbio_out1)
   
-  branched_data = ch_fgbio_out2.branch {
-    normal: it.status == 'normal'
-    tumor: it.status == 'tumor'
-    }
-  
-  ch_fgbio_normal = branched_data.normal.combine(ch_normal_min_reads)
-  ch_fgbio_tumor = branched_data.tumor.combine(ch_tumor_min_reads)
+  ch_fgbio_normal = ch_fgbio_out2.filter {subject, sample_id, status, hist, bam} -> status='normal').combine(ch_normal_min_reads)
+  ch_fgbio_tumor = ch_fgbio_out2.filter {subject, sample_id, status, hist, bam} -> status='tumor').combine(ch_tumor_min_reads)
   
   ch_fgbio_normal.view()
   ch_fgbio_tumor.view()
 
-  ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_out2)
+  ch_fgbio_consensus_in = ch_fgbio_normal.mix(ch_fgbio_tumor)
+  ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_consensus_in)
   
   ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
   ch_for_consensus = (ch_fgbio_out3.combine(ch_ref_fa).combine(ch_ref_src_abs))
