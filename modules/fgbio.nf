@@ -11,9 +11,9 @@ process SET_MATE_INFO {
     
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" SortBam \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" SortBam \
             -i $bam -o ${sample_id}.aligned.sorted.bam -s Queryname
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" SetMateInformation \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" SetMateInformation \
             -i ${sample_id}.aligned.sorted.bam -r $reference -o ${sample_id}.aligned.matefixed.bam
     """
 }
@@ -34,7 +34,7 @@ process GROUP_READS {
 
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" GroupReadsByUmi \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" GroupReadsByUmi \
         -i ${bam} -f "${sample_id}.piped.grouped.histogram.tsv" -o "${sample_id}.piped.grouped.bam" -s Adjacency -e 1 
     """
 
@@ -52,7 +52,7 @@ process GENERATE_CONSENSUS {
 
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" CallMolecularConsensusReads \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" CallMolecularConsensusReads \
         --input $bam --output ${sample_id}.consensus.unmapped.bam \
         --error-rate-post-umi 30 --min-reads ${min_reads}
     """
@@ -71,7 +71,7 @@ process FGBIO_STATS {
     
     script:
     """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-2.0.2.jar" CollectDuplexSeqMetrics \
+    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" CollectDuplexSeqMetrics \
         -i $bam -o ${sample_id} 
         
     """
