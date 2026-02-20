@@ -19,7 +19,7 @@ outdir: "${launchDir}/output"
 # -------------------- VarDict --------------------
 min_af: 0.05
 tumor_min_reads: 3
-germline_min_reads: 1
+normal_min_reads: 1
 
 # -------------------- VEP --------------------
 # These params kinda have to fit what's inside the vep_cache_dir I think, as VEP the tool looks for: <dir_cache>/<species>/<version>_<assembly>
