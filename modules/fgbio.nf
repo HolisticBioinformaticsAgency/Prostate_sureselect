@@ -55,28 +55,10 @@ process GENERATE_CONSENSUS {
     module load java
     java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" CallMolecularConsensusReads \
         --input $bam --output ${sample_id}.consensus.unmapped.bam \
-        --error-rate-post-umi 30 --min-reads ${min_reads}
+        --error-rate-post-umi 30 --min-reads ${min_reads} --threads ${task.cpus}
     """
 }
 
-process FGBIO_STATS {
-    
-    tag "${subject}_${sample_id}"
-    container ''
-    publishDir path: './output/metrics/fgbio', mode: 'copy'
-
-    input:
-        tuple val(subject), val(sample_id), file(bam) 
-    output:
-        tuple val(subject), val(sample_id), file("*") 
-    
-    script:
-    """
-    java -Xmx${task.memory.toGiga() - 2}g -Djava.io.tmpdir="/fs04/scratch2/vh83/jason/tmp" -jar "/fs02/vh83/local_software/fgbio/fgbio-3.1.1.jar" CollectDuplexSeqMetrics \
-        -i $bam -o ${sample_id} 
-        
-    """
-}
 
 process MAP_CONSENSUS {
     
@@ -114,7 +96,7 @@ process MAP_CONSENSUS {
         -FASTQ /dev/stdout \
         -INTERLEAVE true -TMP_DIR "/fs04/scratch2/vh83/jason/tmp" | \
     bwa mem -M -t ${task.cpus} -p $reference /dev/stdin > ${sample_id}.temp.bam
-    samtools sort -o ${sample_id}.consensus.aligned.bam ${sample_id}.temp.bam
+    samtools sort -@ ${task.cpus} -o ${sample_id}.consensus.aligned.bam ${sample_id}.temp.bam
     """
 }
 

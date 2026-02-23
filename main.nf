@@ -19,7 +19,7 @@ include { SURETRIMMER }                    from './modules/suretrimmer.nf'
 
 include {ALIGN_AND_SORT}                   from './modules/align_and_sort.nf'
 
-include { SET_MATE_INFO; GROUP_READS; GENERATE_CONSENSUS; FGBIO_STATS; MAP_CONSENSUS; INDEX } from './modules/fgbio.nf'
+include { SET_MATE_INFO; GROUP_READS; GENERATE_CONSENSUS; MAP_CONSENSUS; INDEX } from './modules/fgbio.nf'
 include { VEP_ANNOTATE }                   from './modules/vep_annotate.nf'
 include { SNPEFF_ANNOTATE }                from './modules/snpeff_annotate.nf'
 include { CLINVAR_ANNOTATE }               from './modules/clinvar_annotate.nf'
@@ -108,7 +108,6 @@ Channel
   ch_fgbio_consensus_in = ch_fgbio_normal.mix(ch_fgbio_tumor)
   ch_fgbio_out3 = GENERATE_CONSENSUS (ch_fgbio_consensus_in)
   
-  ch_fgbio_out4 = FGBIO_STATS (ch_fgbio_out3)
   ch_for_consensus = (ch_fgbio_out3.combine(ch_ref_fa).combine(ch_ref_src_abs))
   ch_fgbio_out5 = MAP_CONSENSUS ( ch_for_consensus )
   ch_bam = INDEX ( ch_fgbio_out5 )
@@ -205,7 +204,10 @@ Channel
     .map { pub_base, sub, id, mode, vcf, ref_fa ->
       tuple(pub_base, sub, id, file(vcf), file(ref_fa))
     }
-  def (ch_vep_vcf, ch_vep_stats) = VEP_ANNOTATE( ch_vep_in )
+  
+  VEP_ANNOTATE( ch_vep_in )
+
+
 /*
   def ch_mane_dir    = Channel.of( file(params.mane_dir) )
   def ch_snpeff_core = SNPEFF_ANNOTATE(
